@@ -477,10 +477,13 @@ tr:hover td{background:rgba(184,149,106,0.03);}
         <span style="font-size:11px;color:var(--muted);margin-left:4px">Stableford pts</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div id="pending-status" style="display:none;padding:6px 12px;background:rgba(201,168,76,0.12);color:var(--gold);border:1px solid var(--gold-border);border-radius:6px;font-size:13px;display:flex;align-items:center;gap:8px">
+        <div id="pending-status" style="display:none;padding:6px 12px;background:rgba(184,149,106,0.10);color:var(--accent);border:1px solid var(--accent-border);border-radius:6px;font-size:13px;align-items:center;gap:8px">
           <span>Pending approval</span>
-          <button onclick="unsubmitScore()" style="padding:4px 10px;background:rgba(201,82,75,0.08);color:var(--red);border:1px solid rgba(201,82,75,0.25);border-radius:4px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;min-height:28px;">Unsubmit</button>
-          <button onclick="editPendingScore()" style="padding:4px 10px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);border-radius:4px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;min-height:28px;">Edit</button>
+          <button onclick="editPendingScore()" style="padding:4px 10px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);border-radius:4px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;min-height:28px;">Edit &amp; Resubmit</button>
+          <button onclick="unsubmitScore()" style="padding:4px 10px;background:rgba(201,82,75,0.08);color:var(--red);border:1px solid rgba(201,82,75,0.25);border-radius:4px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;min-height:28px;">Withdraw</button>
+        </div>
+        <div id="approved-status" style="display:none;padding:6px 12px;background:rgba(92,168,124,0.10);color:var(--green);border:1px solid rgba(92,168,124,0.25);border-radius:6px;font-size:13px;align-items:center;gap:6px">
+          <span>Score submitted</span>
         </div>
         <button id="admin-save-btn" onclick="adminDirectSave()" style="display:none;padding:7px 16px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);border-radius:6px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;min-height:36px;">Save Direct</button>
         <button id="submit-btn" onclick="submitForApproval()" style="padding:8px 22px;background:var(--accent);color:#0f1318;border:none;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;min-height:36px;">Submit for Approval</button>
@@ -1195,8 +1198,10 @@ function updateScorecard(){
   hcpDiv.innerHTML=`<span style="color:var(--gold)">Course hcp: ${ch}</span> &nbsp;·&nbsp; ${course.name} &nbsp;·&nbsp; Par ${course.par} &nbsp;·&nbsp; CR ${course.cr} / Slope ${course.slope}`;
 
   const approved=(scores2026[pName]||{})[rnd]||[];
+  const pendingEntry=pending2026.find(p=>p.player===pName&&p.rnd===rnd);
+  const pendingHoles=pendingEntry?pendingEntry.holes:[];
   const savedHoles=(draft.player===pName&&draft.rnd===rnd)?draft.holes:[];
-  const holes=Array(18).fill(0).map((_,i)=>approved[i]||savedHoles[i]||0);
+  const holes=Array(18).fill(0).map((_,i)=>approved[i]||pendingHoles[i]||savedHoles[i]||0);
   draft={player:pName,rnd,holes};
   saveDraft();
 
@@ -1253,22 +1258,49 @@ function updatePendingStatus(){
   const pName=document.getElementById('sel-player').value;
   const rnd=parseInt(document.getElementById('sel-round').value);
   const pendingDiv=document.getElementById('pending-status');
+  const approvedDiv=document.getElementById('approved-status');
   const submitBtn=document.getElementById('submit-btn');
+  const adminSaveBtn=document.getElementById('admin-save-btn');
   
   if(!pName||!rnd){
     if(pendingDiv)pendingDiv.style.display='none';
+    if(approvedDiv)approvedDiv.style.display='none';
     if(submitBtn)submitBtn.style.display='inline-block';
+    setScorecardLocked(false);
     return;
   }
   
   const isPending=pending2026.some(p=>p.player===pName&&p.rnd===rnd);
-  if(isPending){
-    if(pendingDiv)pendingDiv.style.display='flex';
-    if(submitBtn)submitBtn.style.display='none';
-  }else{
+  const isApproved=scores2026[pName]&&scores2026[pName][rnd]&&scores2026[pName][rnd].some(g=>g>0);
+  
+  if(isApproved&&!adminMode){
+    // Score has been approved — lock everything for non-admins
     if(pendingDiv)pendingDiv.style.display='none';
+    if(approvedDiv)approvedDiv.style.display='flex';
+    if(submitBtn)submitBtn.style.display='none';
+    setScorecardLocked(true);
+  }else if(isPending){
+    // Score is awaiting approval — show read-only with edit/withdraw options
+    if(pendingDiv)pendingDiv.style.display='flex';
+    if(approvedDiv)approvedDiv.style.display='none';
+    if(submitBtn)submitBtn.style.display='none';
+    setScorecardLocked(true);
+  }else{
+    // No submission — open for editing
+    if(pendingDiv)pendingDiv.style.display='none';
+    if(approvedDiv)approvedDiv.style.display='none';
     if(submitBtn)submitBtn.style.display='inline-block';
+    setScorecardLocked(false);
   }
+}
+
+function setScorecardLocked(locked){
+  const grid=document.getElementById('scorecard-grid');
+  if(!grid)return;
+  // Disable/enable all stepper buttons and keyboard inputs
+  grid.querySelectorAll('.step-btn').forEach(b=>b.disabled=locked);
+  grid.querySelectorAll('.score-kbd').forEach(inp=>{inp.disabled=locked;if(locked)inp.style.opacity='0.5';else inp.style.opacity='1';});
+  grid.style.opacity=locked?'0.65':'1';
 }
 
 function incHole(i){
