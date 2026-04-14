@@ -1395,7 +1395,7 @@ function submitForApproval(){
   const id='s'+Date.now().toString(36);
   // Optimistic local update for instant feedback
   pending2026.push({id,player:pName,rnd,holes:[...holes],submittedAt:new Date().toISOString(),entered,total});
-  saveState();updatePendingCount();
+  saveState();updatePendingCount();updatePendingStatus();
   showToast(`Submitted for approval — ${entered} holes, ${total} pts`,3500);
   // Persist to server
   fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
