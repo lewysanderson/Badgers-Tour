@@ -274,7 +274,7 @@ tr:hover td{background:rgba(184,149,106,0.03);}
 /* ── INSIGHTS PAGE ── */
 .insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
 .insight-card{background:var(--card);border:1px solid var(--accent-border);border-radius:8px;padding:1rem;text-align:center;}
-.insight-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;color:var(--accent);line-height:1.1;word-break:break-word;}
+.insight-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;color:var(--accent);line-height:1.1;white-space:nowrap;}
 .insight-label{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
 .bar-name{width:120px;flex-shrink:0;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -2295,8 +2295,11 @@ function _buildInsightKpi(){
     {num:mostConsistent?.name.split(' ').pop()||'--',label:'Most Consistent'},
     {num:mostImproved?.name.split(' ').pop()||'--',label:'Most Improved'}
   ];
-  document.getElementById('insight-kpi').innerHTML=kpis.map(k=>`
-    <div class="insight-card"><div class="insight-num">${k.num}</div><div class="insight-label">${k.label}</div></div>`).join('');
+  document.getElementById('insight-kpi').innerHTML=kpis.map(k=>{
+    const val=String(k.num);
+    const fs=val.length>6?'18px':val.length>4?'22px':'28px';
+    return`<div class="insight-card"><div class="insight-num" style="font-size:${fs}">${val}</div><div class="insight-label">${k.label}</div></div>`;
+  }).join('');
 }
 
 function _buildYrTabs(){
