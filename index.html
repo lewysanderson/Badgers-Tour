@@ -130,22 +130,32 @@ tr:hover td{background:rgba(184,149,106,0.03);}
 .badge-h{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);}
 .badge-t{background:rgba(212,122,114,0.15);color:var(--rose);border:1px solid rgba(212,122,114,0.3);}
 
+/* ── COURSE INFO STRIP ── */
+.course-info-strip{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border:1px solid var(--accent-border);border-radius:8px;margin-bottom:1rem;min-height:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);}
+.course-info-strip:empty{display:none;}
+.course-info-hcp{font-size:13px;font-weight:600;color:var(--accent);}
+.course-info-sep{width:1px;height:16px;background:var(--accent-border);flex-shrink:0;}
+
+/* ── TOTAL BAR ── */
+.total-bar{display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding:12px 0 0;border-top:1px solid var(--accent-border);flex-wrap:wrap;gap:10px;position:sticky;bottom:0;background:var(--card);z-index:5;padding-bottom:4px;}
+
 /* ── STEPPER SCORECARD ── */
 .sc-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.sc-table{width:100%;border-collapse:collapse;min-width:460px;}
-.sc-table th{background:var(--card2);color:var(--muted);font-size:10px;font-weight:400;padding:7px 6px;text-align:center;border-bottom:1px solid var(--accent-border);text-transform:uppercase;letter-spacing:0.06em;}
-.sc-table th.sc-th-l{text-align:left;padding-left:8px;}
-.sc-table td{padding:4px 6px;font-size:12px;text-align:center;border-bottom:1px solid var(--faint);}
-.sc-table td.sc-td-l{text-align:left;font-weight:500;padding-left:8px;}
+.sc-table{width:100%;border-collapse:collapse;min-width:340px;}
+.sc-table th{background:var(--card2);color:var(--muted);font-size:10px;font-weight:400;padding:7px 4px;text-align:center;border-bottom:1px solid var(--accent-border);text-transform:uppercase;letter-spacing:0.04em;}
+.sc-table th.sc-th-l{text-align:left;padding-left:6px;}
+.sc-table td{padding:4px 3px;font-size:12px;text-align:center;border-bottom:1px solid var(--faint);}
+.sc-table td.sc-td-l{text-align:left;font-weight:500;padding-left:6px;white-space:nowrap;}
 .sc-subtotal{background:var(--card2)!important;}
-.sc-subtotal td{font-size:11px;color:var(--muted);padding:6px 6px!important;font-weight:400;text-transform:uppercase;letter-spacing:0.04em;}
+.sc-subtotal td{font-size:11px;color:var(--muted);padding:6px 4px!important;font-weight:400;text-transform:uppercase;letter-spacing:0.04em;}
 .sc-subtotal td.sc-td-l{font-weight:400;}
-.stepper{display:inline-flex;align-items:center;gap:4px;}
-.step-btn{width:36px;height:36px;border-radius:6px;background:var(--card2);border:1px solid var(--accent-border);color:var(--text);cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all 0.12s;user-select:none;-webkit-user-select:none;flex-shrink:0;}
+.stepper{display:inline-flex;align-items:center;gap:2px;}
+.step-btn{width:40px;height:40px;border-radius:8px;background:var(--card2);border:1px solid var(--accent-border);color:var(--text);cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all 0.12s;user-select:none;-webkit-user-select:none;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .step-btn:hover:not(:disabled){background:var(--accent-dim);color:var(--accent);}
-.step-btn:active:not(:disabled){transform:scale(0.9);}
-.step-btn:disabled{opacity:0.25;cursor:default;}
-.score-val{min-width:28px;text-align:center;font-size:14px;font-weight:600;}
+.step-btn:active:not(:disabled){transform:scale(0.92);background:var(--accent-dim);color:var(--accent);}
+.step-btn:disabled{opacity:0.2;cursor:default;}
+.score-val{min-width:26px;text-align:center;font-size:15px;font-weight:600;}
+.score-val-empty{color:var(--muted);font-size:12px;font-weight:400;opacity:0.5;}
 
 /* ── PENDING APPROVALS ── */
 .pending-card{background:var(--card);border:1px solid var(--accent-border);border-radius:8px;padding:1rem 1.25rem;margin-bottom:8px;}
@@ -234,17 +244,21 @@ tr:hover td{background:rgba(184,149,106,0.03);}
   .nav-tab{padding:12px 1.25rem;border-bottom:none;border-left:3px solid transparent;text-align:left;}
   .nav-tab.active{border-left-color:var(--accent);border-bottom-color:transparent;}
   .nav-hamburger{display:flex;}
-  .sc-table{min-width:420px;}
+  .sc-table{min-width:340px;}
   .next-year{font-size:42px;}
   .next-loc{font-size:17px;}
+  .total-bar{padding:10px 0 0;}
+  .course-info-strip{padding:8px 10px;gap:8px;}
 }
 @media(max-width:400px){
   .hero-title{font-size:28px;}
   .stat-num{font-size:28px;}
   .mp-hero-num{font-size:44px;}
-  .sc-table{min-width:380px;}
-  .step-btn{width:44px;height:44px;}
+  .sc-table{min-width:300px;}
+  .step-btn{width:44px;height:44px;font-size:22px;}
   .score-kbd{width:56px;height:38px;}
+  .course-info-strip{font-size:11px;flex-direction:column;gap:4px;align-items:flex-start;}
+  .course-info-sep{display:none;}
 }
 
 /* ── PAGE TRANSITIONS ── */
@@ -273,10 +287,11 @@ tr:hover td{background:rgba(184,149,106,0.03);}
 .delta-dn{color:var(--red);font-weight:600;}
 
 /* ── KEYBOARD ENTRY MODE ── */
-.score-kbd{width:52px;height:34px;background:var(--card2);border:1px solid var(--accent-border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:'Inter',sans-serif;-moz-appearance:textfield;outline:none;}
+.score-kbd{width:48px;height:36px;background:var(--card2);border:1px solid var(--accent-border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:'Inter',sans-serif;-moz-appearance:textfield;outline:none;-webkit-tap-highlight-color:transparent;}
 .score-kbd::-webkit-outer-spin-button,.score-kbd::-webkit-inner-spin-button{-webkit-appearance:none;}
-.score-kbd:focus{border-color:var(--accent);background:rgba(184,149,106,0.07);}
+.score-kbd:focus{border-color:var(--accent);background:rgba(184,149,106,0.07);box-shadow:0 0 0 2px rgba(184,149,106,0.15);}
 .score-kbd.has-score{color:var(--accent);}
+.score-kbd::placeholder{color:var(--muted);opacity:0.4;font-weight:400;}
 </style>
 </head>
 <body>
@@ -451,52 +466,70 @@ tr:hover td{background:rgba(184,149,106,0.03);}
     </div>
   </div>
 
+  <!-- PENDING APPROVAL BANNER (above scorecard for visibility) -->
+  <div id="pending-banner" style="display:none;background:linear-gradient(135deg,rgba(184,149,106,0.12) 0%,rgba(184,149,106,0.06) 100%);border:2px solid var(--accent-border);border-radius:10px;padding:1.5rem;text-align:center;margin-bottom:1rem;">
+    <div style="font-size:15px;color:var(--accent);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px;">Submission Received</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Your score is awaiting admin approval. You can review below or make changes.</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="editPendingScore()" style="padding:10px 24px;background:var(--accent);color:#0f1318;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;min-height:44px;">Edit This Submission</button>
+      <button onclick="unsubmitScore()" style="padding:10px 24px;background:rgba(201,82,75,0.12);color:var(--red);border:1px solid rgba(201,82,75,0.3);border-radius:6px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;min-height:44px;">Withdraw Submission</button>
+    </div>
+  </div>
+
+  <!-- APPROVED BANNER (above scorecard for visibility) -->
+  <div id="approved-banner" style="display:none;background:linear-gradient(135deg,rgba(92,168,124,0.12) 0%,rgba(92,168,124,0.06) 100%);border:2px solid rgba(92,168,124,0.3);border-radius:10px;padding:1.5rem;text-align:center;margin-bottom:1rem;">
+    <div style="font-size:15px;color:var(--green);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px;">Score Approved</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Your score has been approved and published to the leaderboard.</div>
+    <div style="font-size:12px;color:var(--muted);">Contact an admin if you need to make changes.</div>
+  </div>
+
   <!-- Entry form -->
   <div class="admin-section" style="margin-bottom:1.5rem">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
       <div>
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px">Player</div>
-        <select id="sel-player" onchange="updateScorecard()" class="form-select"><option value="">— Select player —</option></select>
+        <select id="sel-player" onchange="updateScorecard()" class="form-select"><option value="">-- Select player --</option></select>
       </div>
       <div>
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px">Round</div>
         <select id="sel-round" onchange="updateScorecard()" class="form-select">
-          <option value="1">Round 1 — Royal Obidos</option>
-          <option value="2">Round 2 — West Cliffs</option>
-          <option value="3">Round 3 — Praia del Rey</option>
+          <option value="1">Round 1 -- Royal Obidos</option>
+          <option value="2">Round 2 -- West Cliffs</option>
+          <option value="3">Round 3 -- Praia del Rey</option>
         </select>
       </div>
     </div>
-    <div id="hcp-display" style="font-size:12px;color:var(--muted);margin-bottom:1rem;min-height:18px"></div>
+
+    <!-- Course info strip -->
+    <div id="hcp-display" class="course-info-strip"></div>
+
+    <!-- Progress bar -->
+    <div id="progress-wrap" style="display:none;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span id="progress-label" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">0 / 18 holes</span>
+        <span id="draft-saved-indicator" style="font-size:10px;color:var(--green);opacity:0;transition:opacity 0.3s;">Draft saved</span>
+      </div>
+      <div style="width:100%;height:4px;background:var(--faint);border-radius:2px;overflow:hidden;border:1px solid var(--accent-border);">
+        <div id="progress-bar" style="height:100%;width:0%;background:var(--accent);border-radius:2px;transition:width 0.3s ease;"></div>
+      </div>
+    </div>
+
     <div id="scorecard-grid" class="sc-wrap">
       <div style="font-size:12px;color:var(--muted);text-align:center;padding:2rem 0">Select a player and round to begin</div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;flex-wrap:wrap;gap:10px">
-      <div style="font-size:14px">
-        Total: <span id="running-total" style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;color:var(--gold)">—</span>
-        <span style="font-size:11px;color:var(--muted);margin-left:4px">Stableford pts</span>
+
+    <!-- Sticky total bar -->
+    <div id="total-bar" class="total-bar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Total</span>
+        <span id="running-total" style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:700;color:var(--gold);line-height:1;">--</span>
+        <span style="font-size:11px;color:var(--muted);">pts</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="scorecard-actions">
+        <button id="clear-card-btn" onclick="clearScorecard()" style="display:none;padding:7px 12px;background:var(--faint);color:var(--muted);border:1px solid var(--accent-border);border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;min-height:36px;">Clear</button>
         <button id="admin-save-btn" onclick="adminDirectSave()" style="display:none;padding:7px 16px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);border-radius:6px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;min-height:36px;">Save Direct</button>
-        <button id="submit-btn" onclick="submitForApproval()" style="padding:8px 22px;background:var(--accent);color:#0f1318;border:none;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;min-height:36px;">Submit for Approval</button>
+        <button id="submit-btn" onclick="confirmSubmit()" style="padding:10px 24px;background:var(--accent);color:#0f1318;border:none;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;min-height:44px;letter-spacing:0.02em;">Submit for Approval</button>
       </div>
-    </div>
-
-    <!-- PENDING APPROVAL BANNER -->
-    <div id="pending-banner" style="display:none;background:linear-gradient(135deg,rgba(184,149,106,0.12) 0%,rgba(184,149,106,0.06) 100%);border:2px solid var(--accent-border);border-radius:10px;padding:2rem;text-align:center;margin-bottom:1.5rem;">
-      <div style="font-size:15px;color:var(--accent);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;">Submission Received</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;">Your score is awaiting admin approval. You can review your submission below or make changes.</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="editPendingScore()" style="padding:10px 24px;background:var(--accent);color:#0f1318;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;min-height:44px;">Edit This Submission</button>
-        <button onclick="unsubmitScore()" style="padding:10px 24px;background:rgba(201,82,75,0.12);color:var(--red);border:1px solid rgba(201,82,75,0.3);border-radius:6px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;min-height:44px;">Withdraw Submission</button>
-      </div>
-    </div>
-
-    <!-- APPROVED BANNER -->
-    <div id="approved-banner" style="display:none;background:linear-gradient(135deg,rgba(92,168,124,0.12) 0%,rgba(92,168,124,0.06) 100%);border:2px solid rgba(92,168,124,0.3);border-radius:10px;padding:2rem;text-align:center;margin-bottom:1.5rem;">
-      <div style="font-size:15px;color:var(--green);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;">Score Approved</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:0.5rem;">Your score has been approved and published to the leaderboard.</div>
-      <div style="font-size:12px;color:var(--muted);">Contact an admin if you need to make changes.</div>
     </div>
   </div>
 
@@ -749,6 +782,13 @@ function saveState(){
 }
 function saveDraft(){
   localStorage.setItem('badgersDraft26',JSON.stringify(draft));
+  // Flash the "Draft saved" indicator
+  const ind=document.getElementById('draft-saved-indicator');
+  if(ind){
+    ind.style.opacity='1';
+    clearTimeout(ind._t);
+    ind._t=setTimeout(()=>{ind.style.opacity='0';},1500);
+  }
 }
 async function loadState(){
   const ok = await syncFromServer();
@@ -1182,10 +1222,20 @@ function toggleMpRound(r){
 // ── SCORE ENTRY ───────────────────────────────────────────────
 function buildPlayerDropdown(){
   const sel=document.getElementById('sel-player');
+  const teams={};
   PLAYERS_2026.forEach(p=>{
-    const o=document.createElement('option');
-    o.value=p.name;o.textContent=p.name+' ('+p.team+')';
-    sel.appendChild(o);
+    if(!teams[p.team])teams[p.team]=[];
+    teams[p.team].push(p);
+  });
+  Object.keys(teams).sort().forEach(team=>{
+    const grp=document.createElement('optgroup');
+    grp.label=team;
+    teams[team].forEach(p=>{
+      const o=document.createElement('option');
+      o.value=p.name;o.textContent=p.name;
+      grp.appendChild(o);
+    });
+    sel.appendChild(grp);
   });
 }
 
@@ -1197,14 +1247,17 @@ function updateScorecard(){
 
   if(!pName){
     grid.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:2rem 0">Select a player and round to begin</div>';
-    hcpDiv.textContent='';return;
+    hcpDiv.innerHTML='';
+    document.getElementById('progress-wrap').style.display='none';
+    document.getElementById('clear-card-btn').style.display='none';
+    return;
   }
 
   const player=PLAYERS_2026.find(p=>p.name===pName);
   const course=COURSES[rnd];
   const ch=player.ch[rnd-1];
 
-  hcpDiv.innerHTML=`<span style="color:var(--gold)">Course hcp: ${ch}</span> &nbsp;·&nbsp; ${course.name} &nbsp;·&nbsp; Par ${course.par} &nbsp;·&nbsp; CR ${course.cr} / Slope ${course.slope}`;
+  hcpDiv.innerHTML=`<span class="course-info-hcp">HCP ${ch}</span><div class="course-info-sep"></div><span>${course.name}</span><div class="course-info-sep"></div><span>Par ${course.par}</span><div class="course-info-sep"></div><span>CR ${course.cr} / Slope ${course.slope}</span>`;
 
   const approved=(scores2026[pName]||{})[rnd]||[];
   const pendingEntry=pending2026.find(p=>p.player===pName&&p.rnd===rnd);
@@ -1215,8 +1268,8 @@ function updateScorecard(){
   saveDraft();
 
   let html=`<table class="sc-table"><thead><tr>
-    <th class="sc-th-l">Hole</th><th>Par</th><th>SI</th><th style="min-width:26px">+</th>
-    <th style="min-width:108px">Score</th><th>Net</th><th style="min-width:34px">Pts</th>
+    <th class="sc-th-l">Hole</th><th>Par</th><th>SI</th><th></th>
+    <th>Score</th><th>Pts</th>
   </tr></thead><tbody>`;
 
   let grandGross=0,grandPts=0;
@@ -1233,33 +1286,31 @@ function updateScorecard(){
       grandGross+=gross;
       if(pts!==null)grandPts+=pts;
       const shotDots=shots===2?'••':shots===1?'•':'';
-      const ptsHtml=pts!==null?`<span style="font-weight:600;font-size:13px;color:${resultColor(pts)}">${pts}</span>`:`<span style="color:var(--muted)">—</span>`;
+      const ptsHtml=pts!==null?`<span style="font-weight:600;font-size:13px;color:${resultColor(pts)}">${pts}</span>`:`<span style="color:var(--muted)">--</span>`;
       html+=`<tr id="hr-${i}" style="${rowBg(pts)}border-bottom:1px solid var(--faint)">
         <td class="sc-td-l">${h.n}</td>
         <td style="color:var(--muted)">${h.par}</td>
-        <td style="color:var(--muted)">${h.si}</td>
-        <td style="font-size:10px;color:var(--gold);letter-spacing:-1px">${shotDots}</td>
+        <td style="color:var(--muted);font-size:11px">${h.si}</td>
+        <td style="font-size:9px;color:var(--gold);letter-spacing:-1px;padding:0 1px">${shotDots}</td>
         <td>${renderScoreCell(i,gross)}</td>
-        <td id="net-${i}" style="color:var(--muted)">${gross?gross-shots:''}</td>
         <td id="pts-${i}">${ptsHtml}</td>
       </tr>`;
     }
     html+=`<tr class="sc-subtotal">
-      <td class="sc-td-l" colspan="4">${half===0?'Out':'In'} &nbsp;·&nbsp; Par ${halfPar}</td>
-      <td id="half-gross-${half}" style="font-weight:600;color:var(--text)">${halfGross||''}</td>
-      <td></td>
+      <td class="sc-td-l" colspan="4">${half===0?'OUT':'IN'} &nbsp;·&nbsp; Par ${halfPar}</td>
+      <td id="half-gross-${half}" style="font-weight:600;color:var(--text);font-size:12px">${halfGross||''}</td>
       <td id="half-pts-${half}" style="color:var(--gold);font-weight:600">${halfPts||''}</td>
     </tr>`;
   });
   html+=`<tr style="background:var(--card2);border-top:2px solid var(--gold-border)">
-    <td class="sc-td-l" colspan="4" style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;padding:8px 6px!important;font-weight:600">Total &nbsp;·&nbsp; Par ${course.par}</td>
-    <td id="grand-gross" style="font-weight:700;font-size:14px;color:var(--text);padding:8px 6px!important">${grandGross||''}</td>
-    <td style="padding:8px 6px!important"></td>
-    <td id="grand-pts" style="color:var(--gold);font-weight:700;font-size:14px;padding:8px 6px!important">${grandPts||''}</td>
+    <td class="sc-td-l" colspan="4" style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;padding:8px 4px!important;font-weight:600">TOTAL &nbsp;·&nbsp; Par ${course.par}</td>
+    <td id="grand-gross" style="font-weight:700;font-size:13px;color:var(--text);padding:8px 4px!important">${grandGross||''}</td>
+    <td id="grand-pts" style="color:var(--gold);font-weight:700;font-size:14px;padding:8px 4px!important">${grandPts||''}</td>
   </tr>`;
   html+='</tbody></table>';
   grid.innerHTML=html;
   updateTotal();
+  updateProgress();
   updatePendingStatus();
 }
 
@@ -1323,12 +1374,12 @@ function setScorecardLocked(locked){
 function incHole(i){
   if(!draft.player)return;
   if(!draft.holes[i]){draft.holes[i]=COURSES[draft.rnd].holes[i].par;}else{draft.holes[i]++;}
-  saveDraft();refreshHole(i);updateTotal();
+  saveDraft();refreshHole(i);updateTotal();updateProgress();
 }
 function decHole(i){
   if(!draft.player||!draft.holes[i])return;
   draft.holes[i]=Math.max(0,draft.holes[i]-1);
-  saveDraft();refreshHole(i);updateTotal();
+  saveDraft();refreshHole(i);updateTotal();updateProgress();
 }
 function refreshHole(i){
   const pName=draft.player;const rnd=draft.rnd;
@@ -1344,11 +1395,16 @@ function refreshHole(i){
   const row=document.getElementById('hr-'+i);
   if(row){row.style.cssText=rowBg(pts)+'border-bottom:1px solid var(--faint)';}
   const scEl=document.getElementById('sc-'+i);
-  if(scEl){if(scEl.tagName==='INPUT'){scEl.value=gross||'';scEl.className='score-kbd'+(gross?' has-score':'');}else{scEl.textContent=gross||'';}}
+  if(scEl){
+    if(scEl.tagName==='INPUT'){scEl.value=gross||'';scEl.className='score-kbd'+(gross?' has-score':'');}
+    else{
+      const par=COURSES[draft.rnd].holes[i].par;
+      scEl.innerHTML=gross?`<span style="font-weight:600;font-size:15px">${gross}</span>`:`<span class="score-val-empty">${par}</span>`;
+    }
+  }
   const decBtn=document.getElementById('dec-'+i);if(decBtn)decBtn.disabled=!gross;
-  const netEl=document.getElementById('net-'+i);if(netEl)netEl.textContent=gross?gross-shots:'';
   const ptsEl=document.getElementById('pts-'+i);
-  if(ptsEl)ptsEl.innerHTML=pts!==null?`<span style="font-weight:600;font-size:13px;color:${resultColor(pts)}">${pts}</span>`:`<span style="color:var(--muted)">—</span>`;
+  if(ptsEl)ptsEl.innerHTML=pts!==null?`<span style="font-weight:600;font-size:13px;color:${resultColor(pts)}">${pts}</span>`:`<span style="color:var(--muted)">--</span>`;
 
   const half=i<9?0:1;const start=half*9;let hp=0,hg=0;
   for(let j=start;j<start+9;j++){
@@ -1369,13 +1425,63 @@ function refreshHole(i){
 function updateTotal(){
   const pName=draft.player||document.getElementById('sel-player').value;
   const rnd=draft.rnd||parseInt(document.getElementById('sel-round').value);
-  if(!pName){document.getElementById('running-total').textContent='—';return;}
+  if(!pName){document.getElementById('running-total').textContent='--';return;}
   const player=PLAYERS_2026.find(p=>p.name===pName);
   const course=COURSES[rnd];const ch=player.ch[rnd-1];
   const holes=draft.player===pName?draft.holes:Array(18).fill(0);
   let total=0;
   holes.forEach((g,i)=>{if(!g)return;const h=course.holes[i];total+=calcStableford(g,h.par,getShots(ch,h.si))||0;});
-  document.getElementById('running-total').textContent=total||'—';
+  document.getElementById('running-total').textContent=total||'--';
+}
+
+function updateProgress(){
+  const wrap=document.getElementById('progress-wrap');
+  const bar=document.getElementById('progress-bar');
+  const label=document.getElementById('progress-label');
+  const clearBtn=document.getElementById('clear-card-btn');
+  if(!wrap||!bar||!label)return;
+  const pName=draft.player||document.getElementById('sel-player').value;
+  if(!pName){wrap.style.display='none';if(clearBtn)clearBtn.style.display='none';return;}
+  const entered=draft.holes.filter(g=>g>0).length;
+  wrap.style.display='block';
+  const pct=Math.round((entered/18)*100);
+  bar.style.width=pct+'%';
+  if(entered===18){bar.style.background='var(--green)';}else{bar.style.background='var(--accent)';}
+  label.textContent=`${entered} / 18 holes`;
+  if(clearBtn)clearBtn.style.display=entered>0?'inline-block':'none';
+}
+
+function confirmSubmit(){
+  const pName=draft.player||document.getElementById('sel-player').value;
+  const rnd=draft.rnd||parseInt(document.getElementById('sel-round').value);
+  if(!pName){showToast('Please select a player first');return;}
+  const holes=draft.holes||Array(18).fill(0);
+  const entered=holes.filter(g=>g>0).length;
+  if(entered===0){showToast('Please enter at least one score');return;}
+  if(pending2026.some(p=>p.player===pName&&p.rnd===rnd)){showToast('Already submitted -- awaiting admin approval');return;}
+
+  const player=PLAYERS_2026.find(p=>p.name===pName);
+  const course=COURSES[rnd];const ch=player.ch[rnd-1];
+  let total=0;
+  holes.forEach((g,i)=>{if(!g)return;const h=course.holes[i];total+=calcStableford(g,h.par,getShots(ch,h.si))||0;});
+
+  const missing=18-entered;
+  const msg=missing>0
+    ?`Submit ${pName}'s Round ${rnd} score?\n\n${entered}/18 holes entered (${missing} missing)\n${total} Stableford points\n\nMissing holes will score 0 pts.`
+    :`Submit ${pName}'s Round ${rnd} score?\n\nAll 18 holes entered\n${total} Stableford points`;
+  showConfirm(msg,()=>submitForApproval(),'Submit','positive');
+}
+
+function clearScorecard(){
+  if(!draft.player)return;
+  const entered=draft.holes.filter(g=>g>0).length;
+  if(entered===0)return;
+  showConfirm(`Clear all ${entered} entered scores?\n\nThis will reset the scorecard to blank.`,()=>{
+    draft.holes=Array(18).fill(0);
+    saveDraft();
+    updateScorecard();
+    showToast('Scorecard cleared');
+  },'Clear');
 }
 
 function submitForApproval(){
@@ -1450,10 +1556,18 @@ function confirmPin(){
 }
 
 let _confirmCb=null;
-function showConfirm(msg,onOk,okLabel='Confirm'){
+function showConfirm(msg,onOk,okLabel='Confirm',style='destructive'){
   _confirmCb=onOk;
-  document.getElementById('confirm-message').textContent=msg;
-  document.getElementById('confirm-ok-btn').textContent=okLabel;
+  const msgEl=document.getElementById('confirm-message');
+  msgEl.textContent=msg;
+  msgEl.style.whiteSpace='pre-line';
+  const btn=document.getElementById('confirm-ok-btn');
+  btn.textContent=okLabel;
+  if(style==='positive'){
+    btn.style.background='var(--accent)';btn.style.color='#0f1318';btn.style.border='none';btn.style.fontWeight='600';
+  }else{
+    btn.style.background='rgba(224,85,85,0.12)';btn.style.color='var(--red)';btn.style.border='1px solid rgba(224,85,85,0.3)';btn.style.fontWeight='500';
+  }
   document.getElementById('confirm-modal').style.display='flex';
 }
 function closeConfirmModal(){document.getElementById('confirm-modal').style.display='none';_confirmCb=null;}
@@ -2013,15 +2127,17 @@ function sparkline(values,w=70,h=26){
 // ════════════════════════════════════════════════════════════
 let kbdMode=false;
 function renderScoreCell(i,gross){
+  const par=draft.rnd?COURSES[draft.rnd].holes[i].par:'';
   if(kbdMode){
-    return`<input class="score-kbd${gross?' has-score':''}" id="sc-${i}" type="number" min="1" max="15"
-      value="${gross||''}" placeholder="${draft.rnd?COURSES[draft.rnd].holes[i].par:''}"
+    return`<input class="score-kbd${gross?' has-score':''}" id="sc-${i}" type="number" inputmode="numeric" min="1" max="15"
+      value="${gross||''}" placeholder="${par}"
       oninput="setHoleKbd(${i},this.value)"
       onkeydown="kbdNavHole(event,${i})">`;
   }
+  const valHtml=gross?`<span style="font-weight:600;font-size:15px">${gross}</span>`:`<span class="score-val-empty">${par}</span>`;
   return`<div class="stepper">
-    <button class="step-btn" id="dec-${i}" onclick="decHole(${i})"${!gross?' disabled':''}>−</button>
-    <span class="score-val" id="sc-${i}">${gross||''}</span>
+    <button class="step-btn" id="dec-${i}" onclick="decHole(${i})"${!gross?' disabled':''}>&#8722;</button>
+    <span class="score-val" id="sc-${i}">${valHtml}</span>
     <button class="step-btn" onclick="incHole(${i})">+</button>
   </div>`;
 }
@@ -2043,7 +2159,7 @@ function setHoleKbd(i,val){
   saveDraft();
   const el=document.getElementById('sc-'+i);
   if(el)el.className='score-kbd'+(v>0?' has-score':'');
-  refreshHole(i);updateTotal();
+  refreshHole(i);updateTotal();updateProgress();
 }
 function kbdNavHole(e,i){
   if(e.key==='Enter'||e.key==='Tab'){
