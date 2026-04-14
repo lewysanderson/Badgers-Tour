@@ -851,22 +851,51 @@ function getTeamForPlayer(name){
   for(const t of NEXT_TOUR.teams)if(t.players.includes(name))return t;
   return null;
 }
+// Build a synthetic 2026 tour entry from live scores2026 data
+function get2026TourEntry(){
+  const scoreEntries=[];
+  for(const [pName,rounds] of Object.entries(scores2026)){
+    const player=PLAYERS_2026.find(p=>p.name===pName);
+    if(!player)continue;
+    let r1=0,r2=0,r3=0;
+    [1,2,3].forEach(rnd=>{
+      const holes=rounds[rnd];
+      if(!holes||!holes.some(g=>g>0))return;
+      const course=COURSES[rnd];const ch=player.ch[rnd-1];
+      let pts=0;
+      holes.forEach((g,i)=>{if(g>0)pts+=calcStableford(g,course.holes[i].par,getShots(ch,course.holes[i].si))||0;});
+      if(rnd===1)r1=pts;else if(rnd===2)r2=pts;else r3=pts;
+    });
+    if(r1||r2||r3)scoreEntries.push({player:pName,r1,r2,r3});
+  }
+  if(scoreEntries.length===0)return null;
+  return{year:2026,location:"Praia del Rey",country:"Portugal",flag:"PT",scores:scoreEntries,live:true};
+}
+
+// Returns TOURS + live 2026 entry if there are any approved scores
+function getToursWithLive(){
+  const t2026=get2026TourEntry();
+  return t2026?[...TOURS,t2026]:[...TOURS];
+}
+
 function getAllStats(){
+  const allTours=getToursWithLive();
   const m={};
-  TOURS.forEach(t=>t.scores.forEach(s=>{
+  allTours.forEach(t=>t.scores.forEach(s=>{
     if(!m[s.player])m[s.player]={name:s.player,rounds:[],tourYears:[]};
-    m[s.player].rounds.push(s.r1,s.r2,s.r3);
-    m[s.player].tourYears.push(t.year);
+    const rounds=[s.r1,s.r2,s.r3].filter(r=>r>0);
+    m[s.player].rounds.push(...rounds);
+    if(!m[s.player].tourYears.includes(t.year))m[s.player].tourYears.push(t.year);
   }));
   return Object.values(m).map(p=>{
     const avg=p.rounds.reduce((a,b)=>a+b,0)/p.rounds.length;
     return{...p,avg,total:p.rounds.reduce((a,b)=>a+b,0),best:Math.max(...p.rounds),tourCount:p.tourYears.length};
   }).sort((a,b)=>b.avg-a.avg);
 }
+// Note: allStats is called at init, but also re-computed dynamically when pages are built
 const allStats=getAllStats();
 
 // ── NAVIGATION ───────────────────────────────────────────────
-let statsLoaded=false;
 function toggleNav(){
   document.querySelector('.nav-tabs').classList.toggle('open');
 }
@@ -877,7 +906,9 @@ function showTab(id,btn){
   btn.classList.add('active');
   const navTabs=document.querySelector('.nav-tabs');
   if(navTabs)navTabs.classList.remove('open');
-  if(id==='stats'&&!statsLoaded){fetchStats();statsLoaded=true;}
+  // Always rebuild data pages to pick up latest 2026 scores
+  if(id==='stats'){fetchStats();}
+  if(id==='home'){buildLeaderboard();buildHomeTours();}
   if(id==='next'){buildTourLeaderboard();buildMpHero();buildMatchplaySummary();}
   if(id==='players'){buildPlayers();}
   if(id==='insights'){buildInsights();}
@@ -885,15 +916,18 @@ function showTab(id,btn){
 
 // ── HOME ─────────────────────────────────────────────────────
 function buildLeaderboard(){
-  document.getElementById('leaderboard-body').innerHTML=allStats.map((p,i)=>`
+  const stats=getAllStats();
+  const allTours=getToursWithLive();
+  document.getElementById('leaderboard-body').innerHTML=stats.map((p,i)=>`
     <tr class="${i===0?'winner-row':''}">
-      <td>${medal(i)} &nbsp;${p.name}${p.tourCount>=TOURS.length?'&nbsp;<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(92,168,124,0.12);color:var(--green);border:1px solid rgba(92,168,124,0.3)">Evergreen</span>':''}</td>
+      <td>${medal(i)} &nbsp;${p.name}${p.tourCount>=allTours.length?'&nbsp;<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(92,168,124,0.12);color:var(--green);border:1px solid rgba(92,168,124,0.3)">Evergreen</span>':''}</td>
       <td><strong class="gold">${p.avg.toFixed(1)}</strong></td><td>${p.best}</td>
       <td>${p.total}</td><td>${p.rounds.length}</td>
     </tr>`).join('');
 }
 function buildHomeTours(){
-  document.getElementById('home-tour-grid').innerHTML=[...TOURS].reverse().map(t=>{
+  const allTours=getToursWithLive();
+  document.getElementById('home-tour-grid').innerHTML=[...allTours].reverse().map(t=>{
     const sorted=[...t.scores].sort((a,b)=>tot(b)-tot(a));
     const w=sorted[0];
     const tw=t.teamStandings?t.teamStandings[0].name:t.teams?t.teams.find(x=>x.winner)?.name:null;
@@ -903,8 +937,8 @@ function buildHomeTours(){
         <span style="font-size:12px;color:var(--muted);margin-left:8px">${t.flag} ${t.location}</span></div>
         <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)">${t.scores.length} players</span>
       </div>
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Individual Winner</div>
-      <div style="font-size:14px;font-weight:500">${w.player} &nbsp;<span class="gold">${tot(w)} pts</span></div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">${t.live?'Current Leader':'Individual Winner'}</div>
+      <div style="font-size:14px;font-weight:500">${w.player} &nbsp;<span class="gold">${tot(w)} pts</span>${t.live?'<span style="font-size:10px;padding:2px 6px;border-radius:10px;background:rgba(92,168,124,0.12);color:var(--green);border:1px solid rgba(92,168,124,0.3);margin-left:6px">Live</span>':''}</div>
       ${tw?`<div style="font-size:12px;color:var(--muted);margin-top:6px">Team: <span style="color:var(--text)">${tw}</span></div>`:''}
     </div>`;
   }).join('');
@@ -912,14 +946,17 @@ function buildHomeTours(){
 
 // ── PLAYERS ──────────────────────────────────────────────────
 function buildPlayers(){
-  document.getElementById('players-grid').innerHTML=allStats.map((p,i)=>{
+  const stats=getAllStats();
+  const allTours=getToursWithLive();
+  document.getElementById('players-grid').innerHTML=stats.map((p,i)=>{
     const col=AVATAR_COLORS[i%AVATAR_COLORS.length];
-    const years=TOURS.filter(t=>t.scores.some(s=>s.player===p.name));
+    const years=allTours.filter(t=>t.scores.some(s=>s.player===p.name));
     const yearRows=years.map(t=>{
       const s=t.scores.find(x=>x.player===p.name);
-      return`<tr><td>${t.flag} ${t.year}</td><td>${s.r1}</td><td>${s.r2}</td><td>${s.r3}</td><td><strong class="gold">${tot(s)}</strong></td></tr>`;
+      const liveTag=t.live?' <span style="font-size:9px;color:var(--green)">(Live)</span>':'';
+      return`<tr><td>${t.flag} ${t.year}${liveTag}</td><td>${s.r1||'--'}</td><td>${s.r2||'--'}</td><td>${s.r3||'--'}</td><td><strong class="gold">${tot(s)}</strong></td></tr>`;
     }).join('');
-    const tourAvgs=years.map(t=>{const s=t.scores.find(x=>x.player===p.name);return s?(s.r1+s.r2+s.r3)/3:0;});
+    const tourAvgs=years.map(t=>{const s=t.scores.find(x=>x.player===p.name);const played=[s.r1,s.r2,s.r3].filter(r=>r>0);return played.length?played.reduce((a,b)=>a+b,0)/played.length:0;});
     const lastAvg=tourAvgs[tourAvgs.length-1],prevAvg=tourAvgs.length>=2?tourAvgs[tourAvgs.length-2]:null;
     const trendHtml=prevAvg!==null?(lastAvg>prevAvg?`<span class="trend-up">▲ ${(lastAvg-prevAvg).toFixed(1)}</span>`:lastAvg<prevAvg?`<span class="trend-dn">▼ ${(prevAvg-lastAvg).toFixed(1)}</span>`:`<span class="trend-eq">— Stable</span>`):'';
     return`<div class="player-card" onclick="togglePlayer('ph-${i}')">
@@ -975,12 +1012,13 @@ function togglePlayer(id){document.getElementById(id).classList.toggle('open');}
 
 // ── TOURS ────────────────────────────────────────────────────
 function buildTours(){
-  document.getElementById('tours-list').innerHTML=[...TOURS].reverse().map(t=>{
+  const allTours=getToursWithLive();
+  document.getElementById('tours-list').innerHTML=[...allTours].reverse().map(t=>{
     const sorted=[...t.scores].sort((a,b)=>tot(b)-tot(a));
     const scoreRows=sorted.map((s,i)=>`
       <tr class="${i===0?'winner-row':''}">
         <td>${medal(i)} &nbsp;${s.player}</td>
-        <td>${s.r1}</td><td>${s.r2}</td><td>${s.r3}</td>
+        <td>${s.r1||'--'}</td><td>${s.r2||'--'}</td><td>${s.r3||'--'}</td>
         <td><strong class="${i===0?'gold':''}">${tot(s)}</strong></td>
       </tr>`).join('');
     let teamSection='';
@@ -1005,7 +1043,7 @@ function buildTours(){
       <div class="tour-card-header" onclick="toggleTour('${id}',this.querySelector('.expand-icon'))">
         <span style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;color:var(--gold);min-width:58px">${t.year}</span>
         <div style="flex:1"><div style="font-size:15px;font-weight:500">${t.flag} ${t.location}, ${t.country}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">${t.scores.length} players · ${sorted[0].player} ${tot(sorted[0])}pts</div></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${t.scores.length} players · ${sorted[0].player} ${tot(sorted[0])}pts${t.live?' <span style="color:var(--green)">(Live)</span>':''}</div></div>
         ${t.teams||t.teamStandings?`<span style="font-size:10px;padding:2px 10px;border-radius:20px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);margin-right:8px">${t.teamStandings?'4 teams':'2 teams'}</span>`:''}
         <span class="expand-icon"><span class="chevron"></span></span>
       </div>
@@ -2042,9 +2080,10 @@ async function fetchStats(){
 }
 
 function computeStatsFromTours(){
-  // Aggregate TOURS data into player-level stats matching renderStats format
+  // Aggregate TOURS + live 2026 data into player-level stats matching renderStats format
+  const allTours=getToursWithLive();
   const map={};
-  TOURS.forEach(t=>{
+  allTours.forEach(t=>{
     t.scores.forEach(s=>{
       if(!map[s.player])map[s.player]={name:s.player,rounds:[],tours:[]};
       [s.r1,s.r2,s.r3].forEach(r=>{if(r)map[s.player].rounds.push(r);});
@@ -2241,40 +2280,38 @@ function buildInsights(){
 }
 
 function _buildInsightKpi(){
+  const allTours=getToursWithLive();
   const stats=getAllStats();
   const totalRounds=stats.reduce((a,p)=>a+p.rounds.length,0);
   const overallAvg=(stats.reduce((a,p)=>a+p.total,0)/totalRounds).toFixed(1);
   const mostConsistent=[...stats].filter(p=>p.rounds.length>=3)
     .sort((a,b)=>stdDev(a.rounds)/a.avg-stdDev(b.rounds)/b.avg)[0];
   const mostImproved=_getMostImproved()[0];
-  const mostWins=stats.slice().sort((a,b)=>{
-    const wA=TOURS.filter(t=>[...t.scores].sort((x,y)=>tot(y)-tot(x))[0]?.player===a.name).length;
-    const wB=TOURS.filter(t=>[...t.scores].sort((x,y)=>tot(y)-tot(x))[0]?.player===b.name).length;
-    return wB-wA;
-  })[0];
   const kpis=[
     {num:stats.length,label:'Players'},
     {num:totalRounds,label:'Total Rounds'},
     {num:overallAvg,label:'Field Avg Pts/Rnd'},
-    {num:TOURS.length,label:'Tours'},
-    {num:mostConsistent?.name.split(' ').pop()||'—',label:'Most Consistent'},
-    {num:mostImproved?.name.split(' ').pop()||'—',label:'Most Improved'}
+    {num:allTours.length,label:'Tours'},
+    {num:mostConsistent?.name.split(' ').pop()||'--',label:'Most Consistent'},
+    {num:mostImproved?.name.split(' ').pop()||'--',label:'Most Improved'}
   ];
   document.getElementById('insight-kpi').innerHTML=kpis.map(k=>`
     <div class="insight-card"><div class="insight-num">${k.num}</div><div class="insight-label">${k.label}</div></div>`).join('');
 }
 
 function _buildYrTabs(){
-  const years=TOURS.map(t=>t.year);
+  const allTours=getToursWithLive();
+  const years=allTours.map(t=>t.year);
   document.getElementById('yr-tabs-wrap').innerHTML=
     `<button class="yr-tab${insightYear==='all'?' active':''}" onclick="setInsightYear('all')">All Tours</button>`+
-    years.map(y=>`<button class="yr-tab${insightYear===y?' active':''}" onclick="setInsightYear(${y})">${y}</button>`).join('');
+    years.map(y=>`<button class="yr-tab${insightYear===y?' active':''}" onclick="setInsightYear(${y})">${y}${y===2026?' (Live)':''}</button>`).join('');
 }
 
 function setInsightYear(yr){insightYear=yr;_buildYrTabs();_buildYrChart();}
 
 function _buildYrChart(){
-  const tours=insightYear==='all'?TOURS:TOURS.filter(t=>t.year===insightYear);
+  const allTours=getToursWithLive();
+  const tours=insightYear==='all'?allTours:allTours.filter(t=>t.year===insightYear);
   const map={};
   tours.forEach(t=>t.scores.forEach(s=>{
     if(!map[s.player])map[s.player]={rounds:[]};
@@ -2318,10 +2355,13 @@ function _buildConsistency(){
 }
 
 function _getMostImproved(){
+  const allTours=getToursWithLive();
   const map={};
-  TOURS.forEach(t=>t.scores.forEach(s=>{
+  allTours.forEach(t=>t.scores.forEach(s=>{
     if(!map[s.player])map[s.player]=[];
-    map[s.player].push({year:t.year,avg:(s.r1+s.r2+s.r3)/3});
+    const playedRounds=[s.r1,s.r2,s.r3].filter(r=>r>0);
+    if(playedRounds.length===0)return;
+    map[s.player].push({year:t.year,avg:playedRounds.reduce((a,b)=>a+b,0)/playedRounds.length});
   }));
   return Object.entries(map)
     .filter(([,arr])=>arr.length>=2)
@@ -2347,11 +2387,13 @@ function _buildImproved(){
 }
 
 function _buildTourRecords(){
-  document.getElementById('tour-records-body').innerHTML=[...TOURS].reverse().map(t=>{
+  const allTours=getToursWithLive();
+  document.getElementById('tour-records-body').innerHTML=[...allTours].reverse().map(t=>{
     const sorted=[...t.scores].sort((a,b)=>tot(b)-tot(a));
     const avg=(t.scores.reduce((a,s)=>a+tot(s),0)/t.scores.length).toFixed(1);
+    const liveTag=t.live?'<span style="font-size:10px;padding:2px 6px;border-radius:10px;background:rgba(92,168,124,0.12);color:var(--green);border:1px solid rgba(92,168,124,0.3);margin-left:4px">Live</span>':'';
     return`<tr>
-      <td>${t.flag} ${t.location} ${t.year}</td>
+      <td>${t.flag} ${t.location} ${t.year}${liveTag}</td>
       <td>${sorted[0].player}</td>
       <td><strong class="gold">${tot(sorted[0])}</strong></td>
       <td>${avg}</td>
@@ -2373,15 +2415,22 @@ function _buildTourRecords(){
   buildMatchplaySummary();
   updatePendingCount();
 
-  // Auto-refresh every 30s — keeps live scores and matchplay current for all viewers
+  // Auto-refresh every 30s — keeps live scores, stats, and insights current for all viewers
   setInterval(async()=>{
     const ok=await syncFromServer();
     if(!ok)return;
     saveState();
     updatePendingCount();
-    if(document.getElementById('page-next').classList.contains('active')){
-      buildTourLeaderboard();buildMpHero();buildMatchplaySummary();
-    }
+    // Rebuild whichever page is currently active
+    const activePage=document.querySelector('.page.active');
+    if(!activePage)return;
+    const id=activePage.id.replace('page-','');
+    if(id==='next'){buildTourLeaderboard();buildMpHero();buildMatchplaySummary();}
+    if(id==='home'){buildLeaderboard();buildHomeTours();}
+    if(id==='stats'){fetchStats();}
+    if(id==='insights'){buildInsights();}
+    if(id==='players'){buildPlayers();}
+    if(id==='tours'){buildTours();}
     if(adminMode){buildPendingList();buildLiveLeaderboard();}
   },30000);
 })();
