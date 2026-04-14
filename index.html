@@ -1884,16 +1884,30 @@ async function fetchStats(){
 }
 
 function computeStatsFromTours(){
-  // Build stats from the TOURS constant data
-  const allRounds = [];
-  TOURS.forEach(t => {
-    t.scores.forEach(s => {
-      if(s.r1) allRounds.push({player:s.player,year:t.year,location:t.location,score:s.r1});
-      if(s.r2) allRounds.push({player:s.player,year:t.year,location:t.location,score:s.r2});
-      if(s.r3) allRounds.push({player:s.player,year:t.year,location:t.location,score:s.r3});
+  // Aggregate TOURS data into player-level stats matching renderStats format
+  const map={};
+  TOURS.forEach(t=>{
+    t.scores.forEach(s=>{
+      if(!map[s.player])map[s.player]={name:s.player,rounds:[],tours:[]};
+      [s.r1,s.r2,s.r3].forEach(r=>{if(r)map[s.player].rounds.push(r);});
+      if(!map[s.player].tours.includes(t.year))map[s.player].tours.push(t.year);
     });
   });
-  return {rounds: allRounds};
+  const players=Object.values(map).map(p=>{
+    const totalPts=p.rounds.reduce((a,b)=>a+b,0);
+    const avg=totalPts/p.rounds.length;
+    const bestRound=Math.max(...p.rounds);
+    return{
+      name:p.name,
+      avg,
+      roundCount:p.rounds.length,
+      totalPts,
+      bestRound,
+      tours:p.tours.length,
+      eagles:0,birdies:0,pars:0,bogeys:0,blobs:0
+    };
+  }).sort((a,b)=>b.avg-a.avg);
+  return {players, updatedAt:new Date().toISOString()};
 }
 
 function renderStats(data){
