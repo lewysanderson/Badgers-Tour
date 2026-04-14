@@ -1175,11 +1175,6 @@ function buildPlayerDropdown(){
     o.value=p.name;o.textContent=p.name+' ('+p.team+')';
     sel.appendChild(o);
   });
-  if(draft.player){
-    sel.value=draft.player;
-    document.getElementById('sel-round').value=draft.rnd;
-    updateScorecard();
-  }
 }
 
 function updateScorecard(){
