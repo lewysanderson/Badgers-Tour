@@ -1,0 +1,8 @@
+{
+  "name": "badgers-tour",
+  "version": "1.0.0",
+  "description": "The Badgers Golf Society — shared web app",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  }
+}

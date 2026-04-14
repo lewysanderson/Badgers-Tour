@@ -21,7 +21,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .muted{color:var(--muted);}
 
 /* ── NAV ── */
-.nav{display:flex;align-items:center;border-bottom:1px solid var(--gold-border);background:var(--surface);padding:0 1rem;position:sticky;top:0;z-index:10;flex-wrap:wrap;}
+.nav{display:flex;align-items:center;border-bottom:1px solid var(--gold-border);background:var(--surface);padding:0 1rem;position:sticky;top:0;z-index:10;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
 .nav-logo{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:600;color:var(--gold);letter-spacing:0.12em;padding:1rem 1.25rem 1rem 0;border-right:1px solid var(--gold-border);margin-right:0.5rem;white-space:nowrap;}
 .nav-tab{padding:1rem;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;transition:all 0.15s;white-space:nowrap;background:none;font-family:'DM Sans',system-ui,sans-serif;}
 .nav-tab:hover{color:var(--text);}
@@ -211,7 +212,40 @@ tr:hover td{background:rgba(201,168,76,0.04);}
   .mp-hero-num{font-size:68px;}
   .mp-hero-divider{padding:0 0.75rem;}
   .mp-progress-track{width:160px;}
+  .insight-grid{grid-template-columns:repeat(2,1fr);}
+  .bar-name{width:90px;}
 }
+
+/* ── PAGE TRANSITIONS ── */
+@keyframes pageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.page.active{animation:pageIn 0.22s ease;}
+
+/* ── SPARKLINES & TREND ── */
+.trend-up{color:var(--green);font-size:11px;font-weight:500;}
+.trend-dn{color:var(--red);font-size:11px;font-weight:500;}
+.trend-eq{color:var(--gold);font-size:11px;}
+.spark-row{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--faint);}
+
+/* ── INSIGHTS PAGE ── */
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.insight-card{background:var(--card);border:1px solid var(--gold-border);border-radius:8px;padding:1rem;text-align:center;}
+.insight-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;color:var(--gold);line-height:1.1;word-break:break-word;}
+.insight-label{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.bar-name{width:120px;flex-shrink:0;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:20px;background:var(--faint);border-radius:3px;position:relative;overflow:hidden;border:1px solid rgba(201,168,76,0.15);}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.6s ease;}
+.bar-val{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:600;}
+.yr-tab{padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--gold-border);background:var(--faint);color:var(--muted);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.yr-tab.active{background:var(--gold-dim);color:var(--gold);}
+.delta-up{color:var(--green);font-weight:600;}
+.delta-dn{color:var(--red);font-weight:600;}
+
+/* ── KEYBOARD ENTRY MODE ── */
+.score-kbd{width:52px;height:32px;background:var(--card2);border:1px solid var(--gold-border);border-radius:6px;color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:'DM Sans',sans-serif;-moz-appearance:textfield;outline:none;}
+.score-kbd::-webkit-outer-spin-button,.score-kbd::-webkit-inner-spin-button{-webkit-appearance:none;}
+.score-kbd:focus{border-color:var(--gold);background:rgba(201,168,76,0.07);}
+.score-kbd.has-score{color:var(--gold);}
 </style>
 </head>
 <body>
@@ -244,13 +278,14 @@ tr:hover td{background:rgba(201,168,76,0.04);}
 </div>
 
 <nav class="nav">
-  <div class="nav-logo">🦡 THE BADGERS</div>
-  <button class="nav-tab active" onclick="showTab('home',this)">Home</button>
-  <button class="nav-tab" onclick="showTab('players',this)">Players</button>
-  <button class="nav-tab" onclick="showTab('tours',this)">Tours</button>
-  <button class="nav-tab" onclick="showTab('next',this)">2026 — Praia del Rey</button>
-  <button class="nav-tab" onclick="showTab('stats',this)">📊 Stats</button>
-  <button class="nav-tab" onclick="showTab('score',this)" style="color:var(--gold)">⛳ Score Entry</button>
+  <div class="nav-logo" style="flex-shrink:0">🦡 THE BADGERS</div>
+  <button class="nav-tab active" onclick="showTab('home',this)" style="flex-shrink:0">Home</button>
+  <button class="nav-tab" onclick="showTab('players',this)" style="flex-shrink:0">Players</button>
+  <button class="nav-tab" onclick="showTab('tours',this)" style="flex-shrink:0">Tours</button>
+  <button class="nav-tab" onclick="showTab('next',this)" style="flex-shrink:0">2026 — Praia del Rey</button>
+  <button class="nav-tab" onclick="showTab('stats',this)" style="flex-shrink:0">📊 Stats</button>
+  <button class="nav-tab" onclick="showTab('insights',this)" style="flex-shrink:0">💡 Insights</button>
+  <button class="nav-tab" onclick="showTab('score',this)" style="color:var(--gold);flex-shrink:0">⛳ Score Entry</button>
 </nav>
 
 <!-- ══ HOME ══ -->
@@ -349,12 +384,43 @@ tr:hover td{background:rgba(201,168,76,0.04);}
   </div>
 </div>
 
+<!-- ══ INSIGHTS ══ -->
+<div id="page-insights" class="page">
+  <div class="section-head"><span class="section-title">Golf Insights</span><div class="section-rule"></div></div>
+  <div class="insight-grid" id="insight-kpi"></div>
+
+  <div class="section-head"><span class="section-title">Year-by-Year Performance</span><div class="section-rule"></div></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem" id="yr-tabs-wrap"></div>
+  <div id="yr-chart" style="margin-bottom:1.5rem"></div>
+
+  <div class="section-head"><span class="section-title">Consistency Rankings</span><div class="section-rule"></div></div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:0.75rem">Coefficient of Variation (CV) — lower % means more consistent. Requires 3+ rounds.</div>
+  <div class="tbl-wrap" style="margin-bottom:1.5rem">
+    <table><thead><tr><th>Player</th><th>Rounds</th><th>Avg</th><th>Std Dev</th><th>Best</th><th>Worst</th><th title="Lower = more consistent">CV %</th></tr></thead>
+    <tbody id="consistency-body"></tbody></table>
+  </div>
+
+  <div class="section-head"><span class="section-title">Most Improved</span><div class="section-rule"></div></div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:0.75rem">Round average from first tour to latest — players with 2+ tours.</div>
+  <div class="tbl-wrap" style="margin-bottom:1.5rem">
+    <table><thead><tr><th>Player</th><th>First Tour Avg</th><th>Latest Tour Avg</th><th>Change</th><th>Trend</th></tr></thead>
+    <tbody id="improved-body"></tbody></table>
+  </div>
+
+  <div class="section-head"><span class="section-title">Tour Records</span><div class="section-rule"></div></div>
+  <div class="tbl-wrap">
+    <table><thead><tr><th>Tour</th><th>🏆 Winner</th><th>Score</th><th>Field Avg</th><th>Players</th></tr></thead>
+    <tbody id="tour-records-body"></tbody></table>
+  </div>
+</div>
+
 <!-- ══ SCORE ENTRY ══ -->
 <div id="page-score" class="page">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px">
     <div class="section-head" style="margin-bottom:0;flex:1"><span class="section-title">2026 Score Entry</span><div class="section-rule"></div></div>
     <div style="display:flex;gap:8px;align-items:center">
       <div id="sheets-status" style="display:none" class="sheets-badge">● Sheets connected</div>
+      <button onclick="toggleKbdMode()" id="kbd-btn" class="action-btn" title="Switch between stepper buttons and direct keyboard input">⌨ Keyboard</button>
       <button onclick="toggleAdmin()" id="admin-btn" class="action-btn">🔒 Admin</button>
     </div>
   </div>
@@ -428,6 +494,11 @@ tr:hover td{background:rgba(201,168,76,0.04);}
     <div id="mp-entry-wrap" style="margin-bottom:1.5rem"></div>
 
     <div style="margin-bottom:1.5rem">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Backup &amp; Restore</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">
+        <button onclick="exportData()" style="font-size:12px;padding:5px 14px;border-radius:6px;background:rgba(76,175,110,0.1);color:var(--green);border:1px solid rgba(76,175,110,0.3);cursor:pointer;font-family:'DM Sans',sans-serif;">⬇ Export Backup</button>
+        <button onclick="importData()" style="font-size:12px;padding:5px 14px;border-radius:6px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);cursor:pointer;font-family:'DM Sans',sans-serif;">⬆ Import Backup</button>
+      </div>
       <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Data Management</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button onclick="clearAllScores()" style="font-size:12px;padding:5px 14px;border-radius:6px;background:rgba(224,85,85,0.08);color:var(--red);border:1px solid rgba(224,85,85,0.25);cursor:pointer;font-family:'DM Sans',sans-serif;">Clear All 2026 Scores</button>
@@ -445,6 +516,46 @@ tr:hover td{background:rgba(201,168,76,0.04);}
 // ════════════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxg-GaX8RazBoFAzoFjhYYZlWELmO85Yr3Gwz16Rp3oCMzk_nJqABliMoYBsIAu91dR/exec';
 const ADMIN_PIN  = '2026';
+
+// ── API HELPERS ───────────────────────────────────────────────
+async function adminPost(action, params = {}) {
+  try {
+    const r = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: ADMIN_PIN, action, ...params })
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch (e) {
+    console.error('[adminPost]', action, e);
+    showToast('⚠ Server error — changes may not have saved');
+    return { ok: false };
+  }
+}
+
+async function syncFromServer() {
+  try {
+    const r = await fetch('/api/state');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (d.scores)    scores2026   = d.scores;
+    if (d.published) published    = d.published;
+    if (d.pending)   pending2026  = d.pending;
+    if (d.matchplay) {
+      matchplay = d.matchplay;
+      [1,2,3].forEach(rn => { if (matchplay[rn]) matchplay[rn].pairs = migratePairs(matchplay[rn].pairs); });
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Send the full matchplay[round].pairs to the server after any local change
+async function saveMpRound(rnd) {
+  adminPost('updateMatchplayRound', { round: rnd, pairs: matchplay[rnd].pairs });
+}
 
 // ── TOUR DATA ────────────────────────────────────────────────
 const TOURS = [
@@ -591,27 +702,30 @@ let mpEntryOpen = {1:false,2:false,3:false}; // track which rounds are expanded 
 let draft = {player:'',rnd:1,holes:Array(18).fill(0)};
 
 function saveState(){
-  localStorage.setItem('badgers2026',JSON.stringify({scores:scores2026,published,pending:pending2026,matchplay}));
+  // Keep a local cache for offline fallback — server is the source of truth
+  localStorage.setItem('badgers2026_cache',JSON.stringify({scores:scores2026,published,pending:pending2026,matchplay}));
 }
 function saveDraft(){
   localStorage.setItem('badgersDraft26',JSON.stringify(draft));
 }
-function loadState(){
-  try{
-    const d=JSON.parse(localStorage.getItem('badgers2026')||'{}');
-    if(d.scores)   scores2026=d.scores;
-    if(d.published)published=d.published;
-    if(d.pending)  pending2026=d.pending;
-    if(d.matchplay){
-      // Migrate old pair formats
-      matchplay=d.matchplay;
-      [1,2,3].forEach(r=>{if(matchplay[r])matchplay[r].pairs=migratePairs(matchplay[r].pairs);});
-    }
-  }catch(e){}
-  try{
-    const dr=JSON.parse(localStorage.getItem('badgersDraft26')||'{}');
-    if(dr.player)draft=dr;
-  }catch(e){}
+async function loadState(){
+  const ok = await syncFromServer();
+  if (!ok) {
+    // Fall back to local cache
+    try {
+      const raw = localStorage.getItem('badgers2026_cache') || localStorage.getItem('badgers2026') || '{}';
+      const d = JSON.parse(raw);
+      if(d.scores)    scores2026  = d.scores;
+      if(d.published) published   = d.published;
+      if(d.pending)   pending2026 = d.pending;
+      if(d.matchplay) { matchplay=d.matchplay; [1,2,3].forEach(r=>{if(matchplay[r])matchplay[r].pairs=migratePairs(matchplay[r].pairs);}); }
+    } catch(e){}
+    showToast('⚠ Could not reach server — showing cached data', 4000);
+  }
+  try {
+    const dr = JSON.parse(localStorage.getItem('badgersDraft26') || '{}');
+    if (dr.player) draft = dr;
+  } catch(e){}
   updatePublishButtons();
 }
 
@@ -679,6 +793,7 @@ function showTab(id,btn){
   if(id==='stats'&&!statsLoaded){fetchStats();statsLoaded=true;}
   if(id==='next'){buildTourLeaderboard();buildMpHero();buildMatchplaySummary();}
   if(id==='players'){buildPlayers();}
+  if(id==='insights'){buildInsights();}
 }
 
 // ── HOME ─────────────────────────────────────────────────────
@@ -717,6 +832,9 @@ function buildPlayers(){
       const s=t.scores.find(x=>x.player===p.name);
       return`<tr><td>${t.flag} ${t.year}</td><td>${s.r1}</td><td>${s.r2}</td><td>${s.r3}</td><td><strong class="gold">${tot(s)}</strong></td></tr>`;
     }).join('');
+    const tourAvgs=years.map(t=>{const s=t.scores.find(x=>x.player===p.name);return s?(s.r1+s.r2+s.r3)/3:0;});
+    const lastAvg=tourAvgs[tourAvgs.length-1],prevAvg=tourAvgs.length>=2?tourAvgs[tourAvgs.length-2]:null;
+    const trendHtml=prevAvg!==null?(lastAvg>prevAvg?`<span class="trend-up">▲ ${(lastAvg-prevAvg).toFixed(1)}</span>`:lastAvg<prevAvg?`<span class="trend-dn">▼ ${(prevAvg-lastAvg).toFixed(1)}</span>`:`<span class="trend-eq">— Stable</span>`):'';
     return`<div class="player-card" onclick="togglePlayer('ph-${i}')">
       <div class="player-header">
         <div class="avatar" style="background:${col};color:#fff">${initials(p.name)}</div>
@@ -730,6 +848,7 @@ function buildPlayers(){
       <div class="stat-row"><span>All-time total</span><span>${p.total} pts</span></div>
       <div class="stat-row"><span>Best round</span><span>${p.best} pts</span></div>
       <div class="stat-row"><span>Tours played</span><span>${p.tourYears.join(', ')}</span></div>
+      ${tourAvgs.length>=2?`<div class="spark-row">${sparkline(tourAvgs,68,24)}<div style="flex:1"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">Tour trend</div>${trendHtml}</div></div>`:''}
       ${(()=>{
         const mp2026=PLAYERS_2026.find(pl=>pl.name===p.name);
         if(!mp2026)return'';
@@ -1076,13 +1195,7 @@ function updateScorecard(){
         <td style="color:var(--muted)">${h.par}</td>
         <td style="color:var(--muted)">${h.si}</td>
         <td style="font-size:10px;color:var(--gold);letter-spacing:-1px">${shotDots}</td>
-        <td>
-          <div class="stepper">
-            <button class="step-btn" id="dec-${i}" onclick="decHole(${i})"${!gross?' disabled':''}>−</button>
-            <span class="score-val" id="sc-${i}">${gross||''}</span>
-            <button class="step-btn" onclick="incHole(${i})">+</button>
-          </div>
-        </td>
+        <td>${renderScoreCell(i,gross)}</td>
         <td id="net-${i}" style="color:var(--muted)">${gross?gross-shots:''}</td>
         <td id="pts-${i}">${ptsHtml}</td>
       </tr>`;
@@ -1128,7 +1241,8 @@ function refreshHole(i){
 
   const row=document.getElementById('hr-'+i);
   if(row){row.style.cssText=rowBg(pts)+'border-bottom:1px solid var(--faint)';}
-  const scEl=document.getElementById('sc-'+i);if(scEl)scEl.textContent=gross||'';
+  const scEl=document.getElementById('sc-'+i);
+  if(scEl){if(scEl.tagName==='INPUT'){scEl.value=gross||'';scEl.className='score-kbd'+(gross?' has-score':'');}else{scEl.textContent=gross||'';}}
   const decBtn=document.getElementById('dec-'+i);if(decBtn)decBtn.disabled=!gross;
   const netEl=document.getElementById('net-'+i);if(netEl)netEl.textContent=gross?gross-shots:'';
   const ptsEl=document.getElementById('pts-'+i);
@@ -1177,10 +1291,17 @@ function submitForApproval(){
   holes.forEach((g,i)=>{if(!g)return;const h=course.holes[i];total+=calcStableford(g,h.par,getShots(ch,h.si))||0;});
 
   const id='s'+Date.now().toString(36);
+  // Optimistic local update for instant feedback
   pending2026.push({id,player:pName,rnd,holes:[...holes],submittedAt:new Date().toISOString(),entered,total});
   saveState();updatePendingCount();
   showToast(`✓ Submitted for approval — ${entered} holes, ${total} pts`,3500);
   if(SCRIPT_URL)sheetsPost({action:'pending',year:2026,player:pName,rnd,holes,total});
+  // Persist to server
+  fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({player:pName,round:rnd,holes:[...holes],total,entered})
+  }).then(r=>r.json()).then(d=>{
+    if(d.ok===false&&d.reason==='Already pending')showToast('Already submitted — awaiting approval');
+  }).catch(()=>showToast('⚠ Submission may not have saved'));
 }
 
 function adminDirectSave(){
@@ -1188,9 +1309,11 @@ function adminDirectSave(){
   const rnd=draft.rnd||parseInt(document.getElementById('sel-round').value);
   if(!pName){showToast('Please select a player');return;}
   if(!scores2026[pName])scores2026[pName]={};
-  scores2026[pName][rnd]=[...(draft.holes||[])];
+  const savedHoles=[...(draft.holes||[])];
+  scores2026[pName][rnd]=savedHoles;
   saveState();buildLiveLeaderboard();buildTourLeaderboard();
   showToast(`✓ ${pName} Rnd ${rnd} saved directly`);
+  adminPost('save',{player:pName,round:rnd,holes:savedHoles});
   saveRoundToSheets(pName,rnd);
 }
 
@@ -1282,6 +1405,7 @@ function approveScore(id){
   pending2026.splice(idx,1);saveState();
   updatePendingCount();buildPendingList();buildLiveLeaderboard();buildTourLeaderboard();
   showToast(`✓ Approved: ${p.player} Round ${p.rnd}`);
+  adminPost('approve',{id});
   saveRoundToSheets(p.player,p.rnd);
 }
 function rejectScore(id){
@@ -1290,11 +1414,13 @@ function rejectScore(id){
   showConfirm(`Reject ${p.player}'s Round ${p.rnd} score?`,()=>{
     pending2026.splice(idx,1);saveState();updatePendingCount();buildPendingList();
     showToast(`Rejected: ${p.player} Round ${p.rnd}`);
+    adminPost('reject',{id});
   },'Reject');
 }
 function clearPendingQueue(){
   showConfirm('Clear all pending submissions?',()=>{
     pending2026=[];saveState();buildPendingList();updatePendingCount();showToast('Pending queue cleared');
+    adminPost('clearPending');
   },'Clear');
 }
 
@@ -1328,6 +1454,7 @@ function buildLiveLeaderboard(){
 function togglePublish(rnd){
   published[rnd]=!published[rnd];saveState();updatePublishButtons();buildLiveLeaderboard();buildTourLeaderboard();
   showToast(`Round ${rnd} ${published[rnd]?'published ✓':'hidden'}`);
+  adminPost('publish',{round:rnd});
 }
 function updatePublishButtons(){
   [1,2,3].forEach(r=>{
@@ -1469,6 +1596,7 @@ function addMatch(rnd,type){
   saveState();
   buildMatchplayAdmin();
   buildMatchplaySummary();
+  saveMpRound(rnd);
 }
 
 // Remove a match from a round
@@ -1478,6 +1606,7 @@ function removeMatch(rnd,idx){
     saveState();
     buildMatchplayAdmin();
     buildMatchplaySummary();
+    saveMpRound(rnd);
   },'Remove');
 }
 
@@ -1488,6 +1617,7 @@ function updateMatchPlayer(rnd,idx,side,playerIdx,val){
   matchplay[rnd].pairs[idx][side][playerIdx]=val;
   saveState();
   buildMatchplaySummary();
+  saveMpRound(rnd);
   // No full admin rebuild — dropdowns already reflect correct value via native select
 }
 
@@ -1498,7 +1628,8 @@ function setMatchResult(rnd,idx,res){
   matchplay[rnd].pairs[idx].result=(cur===res)?null:res;
   saveState();
   buildMatchplayAdmin();
-  buildMatchplaySummary(); // also calls buildMpHero internally
+  buildMatchplaySummary();
+  saveMpRound(rnd);
   saveMpToSheets();
 }
 
@@ -1508,6 +1639,7 @@ function setMatchMargin(rnd,idx,val){
   matchplay[rnd].pairs[idx].margin=val;
   saveState();
   buildMatchplaySummary();
+  saveMpRound(rnd);
   saveMpToSheets();
 }
 
@@ -1521,6 +1653,7 @@ function resetMatchplay(){
     buildMatchplayAdmin();
     buildMatchplaySummary();
     showToast('Matchplay draw reset to defaults');
+    adminPost('resetMatchplay');
   },'Reset');
 }
 
@@ -1530,6 +1663,7 @@ function clearAllScores(){
     scores2026={};published={1:false,2:false,3:false};
     saveState();updatePublishButtons();buildLiveLeaderboard();buildTourLeaderboard();
     showToast('All 2026 scores cleared');
+    adminPost('clearScores');
     sheetsPost({action:'clearYear',year:2026});
   },'Clear All');
 }
@@ -1624,18 +1758,286 @@ function renderStats(data){
   el.innerHTML=html;
 }
 
+// ════════════════════════════════════════════════════════════
+//  SPARKLINES
+// ════════════════════════════════════════════════════════════
+function sparkline(values,w=70,h=26){
+  const v=values.filter(x=>x>0);
+  if(v.length<2)return'';
+  const mn=Math.min(...v),mx=Math.max(...v),range=mx-mn||1;
+  const pts=v.map((val,i)=>`${(i/(v.length-1))*w},${h-4-((val-mn)/range)*(h-10)}`).join(' ');
+  const last=v[v.length-1],prev=v[v.length-2];
+  const col=last>prev?'#4caf6e':last<prev?'#e05555':'#c9a84c';
+  const ex=w/(v.length-1)||w;
+  const lx=(v.length-1)*ex,ly=h-4-((last-mn)/range)*(h-10);
+  return`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="display:block;overflow:visible;flex-shrink:0">
+    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" opacity="0.7"/>
+    <circle cx="${lx}" cy="${ly}" r="2.5" fill="${col}"/>
+  </svg>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SCORE CELL RENDERER (stepper or keyboard mode)
+// ════════════════════════════════════════════════════════════
+let kbdMode=false;
+function renderScoreCell(i,gross){
+  if(kbdMode){
+    return`<input class="score-kbd${gross?' has-score':''}" id="sc-${i}" type="number" min="1" max="15"
+      value="${gross||''}" placeholder="${draft.rnd?COURSES[draft.rnd].holes[i].par:''}"
+      oninput="setHoleKbd(${i},this.value)"
+      onkeydown="kbdNavHole(event,${i})">`;
+  }
+  return`<div class="stepper">
+    <button class="step-btn" id="dec-${i}" onclick="decHole(${i})"${!gross?' disabled':''}>−</button>
+    <span class="score-val" id="sc-${i}">${gross||''}</span>
+    <button class="step-btn" onclick="incHole(${i})">+</button>
+  </div>`;
+}
+function toggleKbdMode(){
+  kbdMode=!kbdMode;
+  const btn=document.getElementById('kbd-btn');
+  if(btn){btn.textContent=kbdMode?'⌨ Stepper':'⌨ Keyboard';btn.style.background=kbdMode?'rgba(201,168,76,0.25)':'';}
+  updateScorecard();
+  // Focus first empty hole when entering kbd mode
+  if(kbdMode){
+    const firstEmpty=draft.holes.findIndex(g=>!g);
+    const el=document.getElementById('sc-'+(firstEmpty>=0?firstEmpty:0));
+    if(el){el.focus();el.select();}
+  }
+}
+function setHoleKbd(i,val){
+  const v=parseInt(val)||0;
+  draft.holes[i]=v>0?v:0;
+  saveDraft();
+  const el=document.getElementById('sc-'+i);
+  if(el)el.className='score-kbd'+(v>0?' has-score':'');
+  refreshHole(i);updateTotal();
+}
+function kbdNavHole(e,i){
+  if(e.key==='Enter'||e.key==='Tab'){
+    e.preventDefault();
+    const next=document.getElementById('sc-'+(i+1));
+    if(next){next.focus();next.select();}
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ════════════════════════════════════════════════════════════
+async function exportData(){
+  try{
+    showToast('Exporting…');
+    const r=await fetch('/api/state');
+    const serverState=r.ok?await r.json():{scores:scores2026,published,pending:pending2026,matchplay};
+    const payload={version:1,exportDate:new Date().toISOString(),...serverState};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='badgers-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✓ Backup exported');
+  }catch(e){showToast('⚠ Export failed');}
+}
+function importData(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        if(!d.version)throw new Error('Invalid file');
+        const date=new Date(d.exportDate).toLocaleDateString('en-GB');
+        showConfirm(`Import backup from ${date}? Current 2026 data will be overwritten.`,async()=>{
+          // Normalise keys (backup may use scores2026/pending2026 from old format)
+          const imp={
+            scores:   d.scores   ?? d.scores2026   ?? {},
+            published:d.published ?? {1:false,2:false,3:false},
+            pending:  d.pending   ?? d.pending2026  ?? [],
+            matchplay:d.matchplay ?? matchplay
+          };
+          scores2026=imp.scores;published=imp.published;pending2026=imp.pending;
+          matchplay=imp.matchplay;[1,2,3].forEach(r=>{if(matchplay[r])matchplay[r].pairs=migratePairs(matchplay[r].pairs);});
+          saveState();
+          buildLiveLeaderboard();buildPendingList();buildTourLeaderboard();
+          buildMatchplayAdmin();buildMatchplaySummary();updatePublishButtons();updatePendingCount();
+          await adminPost('importState',imp);
+          showToast('✓ Data imported successfully');
+        },'Import');
+      }catch(err){showToast('Error — invalid backup file');}
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+// ════════════════════════════════════════════════════════════
+//  INSIGHTS
+// ════════════════════════════════════════════════════════════
+let insightYear='all';
+
+function stdDev(arr){
+  const n=arr.length;if(n<2)return 0;
+  const mean=arr.reduce((a,b)=>a+b,0)/n;
+  return Math.sqrt(arr.reduce((a,v)=>a+(v-mean)**2,0)/n);
+}
+
+function buildInsights(){
+  _buildInsightKpi();
+  _buildYrTabs();
+  _buildYrChart();
+  _buildConsistency();
+  _buildImproved();
+  _buildTourRecords();
+}
+
+function _buildInsightKpi(){
+  const stats=getAllStats();
+  const totalRounds=stats.reduce((a,p)=>a+p.rounds.length,0);
+  const overallAvg=(stats.reduce((a,p)=>a+p.total,0)/totalRounds).toFixed(1);
+  const mostConsistent=[...stats].filter(p=>p.rounds.length>=3)
+    .sort((a,b)=>stdDev(a.rounds)/a.avg-stdDev(b.rounds)/b.avg)[0];
+  const mostImproved=_getMostImproved()[0];
+  const mostWins=stats.slice().sort((a,b)=>{
+    const wA=TOURS.filter(t=>[...t.scores].sort((x,y)=>tot(y)-tot(x))[0]?.player===a.name).length;
+    const wB=TOURS.filter(t=>[...t.scores].sort((x,y)=>tot(y)-tot(x))[0]?.player===b.name).length;
+    return wB-wA;
+  })[0];
+  const kpis=[
+    {num:stats.length,label:'Players'},
+    {num:totalRounds,label:'Total Rounds'},
+    {num:overallAvg,label:'Field Avg Pts/Rnd'},
+    {num:TOURS.length,label:'Tours'},
+    {num:mostConsistent?.name.split(' ').pop()||'—',label:'🎯 Most Consistent'},
+    {num:mostImproved?.name.split(' ').pop()||'—',label:'📈 Most Improved'}
+  ];
+  document.getElementById('insight-kpi').innerHTML=kpis.map(k=>`
+    <div class="insight-card"><div class="insight-num">${k.num}</div><div class="insight-label">${k.label}</div></div>`).join('');
+}
+
+function _buildYrTabs(){
+  const years=TOURS.map(t=>t.year);
+  document.getElementById('yr-tabs-wrap').innerHTML=
+    `<button class="yr-tab${insightYear==='all'?' active':''}" onclick="setInsightYear('all')">All Tours</button>`+
+    years.map(y=>`<button class="yr-tab${insightYear===y?' active':''}" onclick="setInsightYear(${y})">${y}</button>`).join('');
+}
+
+function setInsightYear(yr){insightYear=yr;_buildYrTabs();_buildYrChart();}
+
+function _buildYrChart(){
+  const tours=insightYear==='all'?TOURS:TOURS.filter(t=>t.year===insightYear);
+  const map={};
+  tours.forEach(t=>t.scores.forEach(s=>{
+    if(!map[s.player])map[s.player]={rounds:[]};
+    map[s.player].rounds.push(s.r1,s.r2,s.r3);
+  }));
+  const sorted=Object.entries(map)
+    .map(([name,d])=>({name,avg:d.rounds.reduce((a,b)=>a+b,0)/d.rounds.length,n:d.rounds.length}))
+    .sort((a,b)=>b.avg-a.avg);
+  const maxAvg=Math.max(...sorted.map(p=>p.avg));
+  const colors=['var(--gold)','#C0C0C0','#CD7F32'];
+  document.getElementById('yr-chart').innerHTML=sorted.map((p,i)=>{
+    const pct=(p.avg/maxAvg)*100;
+    const col=colors[i]||'rgba(240,236,224,0.3)';
+    return`<div class="bar-row">
+      <div class="bar-name">${p.name}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${col}"></div>
+        <span class="bar-val" style="color:${i<3?'#0b180b':'var(--text)'}">${p.avg.toFixed(1)}</span>
+      </div>
+      <div style="width:40px;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0">${p.n} rnds</div>
+    </div>`;
+  }).join('');
+}
+
+function _buildConsistency(){
+  const rows=getAllStats().filter(p=>p.rounds.length>=3).map(p=>{
+    const sd=stdDev(p.rounds);
+    const cv=((sd/p.avg)*100);
+    return{...p,sd,cv};
+  }).sort((a,b)=>a.cv-b.cv);
+  document.getElementById('consistency-body').innerHTML=rows.map((p,i)=>`
+    <tr class="${i===0?'winner-row':''}">
+      <td>${medal(i)} &nbsp;${p.name}</td>
+      <td>${p.rounds.length}</td>
+      <td><strong class="gold">${p.avg.toFixed(1)}</strong></td>
+      <td>${p.sd.toFixed(1)}</td>
+      <td style="color:var(--green)">${Math.max(...p.rounds)}</td>
+      <td style="color:var(--muted)">${Math.min(...p.rounds)}</td>
+      <td><span style="color:${p.cv<15?'var(--green)':p.cv<22?'var(--gold)':'var(--muted)'}">${p.cv.toFixed(1)}%</span></td>
+    </tr>`).join('');
+}
+
+function _getMostImproved(){
+  const map={};
+  TOURS.forEach(t=>t.scores.forEach(s=>{
+    if(!map[s.player])map[s.player]=[];
+    map[s.player].push({year:t.year,avg:(s.r1+s.r2+s.r3)/3});
+  }));
+  return Object.entries(map)
+    .filter(([,arr])=>arr.length>=2)
+    .map(([name,arr])=>{
+      const sorted=arr.sort((a,b)=>a.year-b.year);
+      return{name,firstYear:sorted[0].year,firstAvg:sorted[0].avg,lastYear:sorted[sorted.length-1].year,lastAvg:sorted[sorted.length-1].avg,delta:sorted[sorted.length-1].avg-sorted[0].avg,avgs:sorted.map(x=>x.avg)};
+    }).sort((a,b)=>b.delta-a.delta);
+}
+
+function _buildImproved(){
+  const rows=_getMostImproved();
+  document.getElementById('improved-body').innerHTML=rows.map((p,i)=>{
+    const col=p.delta>0?'var(--green)':p.delta<0?'var(--red)':'var(--muted)';
+    const arrow=p.delta>0?'▲':p.delta<0?'▼':'—';
+    return`<tr class="${i===0&&p.delta>0?'winner-row':''}">
+      <td>${p.name}</td>
+      <td>${p.firstYear} <span style="color:var(--muted);font-size:11px">(${p.firstAvg.toFixed(1)})</span></td>
+      <td>${p.lastYear} <span style="color:var(--muted);font-size:11px">(${p.lastAvg.toFixed(1)})</span></td>
+      <td><span style="color:${col};font-weight:600">${arrow} ${Math.abs(p.delta).toFixed(1)}</span></td>
+      <td>${sparkline(p.avgs,80,22)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function _buildTourRecords(){
+  document.getElementById('tour-records-body').innerHTML=[...TOURS].reverse().map(t=>{
+    const sorted=[...t.scores].sort((a,b)=>tot(b)-tot(a));
+    const avg=(t.scores.reduce((a,s)=>a+tot(s),0)/t.scores.length).toFixed(1);
+    return`<tr>
+      <td>${t.flag} ${t.location} ${t.year}</td>
+      <td>🏆 ${sorted[0].player}</td>
+      <td><strong class="gold">${tot(sorted[0])}</strong></td>
+      <td>${avg}</td>
+      <td>${t.scores.length}</td>
+    </tr>`;
+  }).join('');
+}
+
 // ── INIT ──────────────────────────────────────────────────────
-loadState();
-buildPlayerDropdown();
-buildLeaderboard();
-buildHomeTours();
-buildPlayers();
-buildTours();
-buildNextTour();
-buildMpHero();
-buildMatchplaySummary();
-updatePendingCount();
-if(SCRIPT_URL)document.getElementById('sheets-status').style.display='inline-flex';
+(async()=>{
+  await loadState();
+  buildPlayerDropdown();
+  buildLeaderboard();
+  buildHomeTours();
+  buildPlayers();
+  buildTours();
+  buildNextTour();
+  buildMpHero();
+  buildMatchplaySummary();
+  updatePendingCount();
+  if(SCRIPT_URL)document.getElementById('sheets-status').style.display='inline-flex';
+
+  // Auto-refresh every 30s — keeps live scores and matchplay current for all viewers
+  setInterval(async()=>{
+    const ok=await syncFromServer();
+    if(!ok)return;
+    saveState();
+    updatePendingCount();
+    if(document.getElementById('page-next').classList.contains('active')){
+      buildTourLeaderboard();buildMpHero();buildMatchplaySummary();
+    }
+    if(adminMode){buildPendingList();buildLiveLeaderboard();}
+  },30000);
+})();
 </script>
 </body>
 </html>
