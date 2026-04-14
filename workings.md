@@ -1,6 +1,6 @@
 # Badgers Tour — Web App Conversion Workings
 
-## Status: CODE COMPLETE — Needs Deployment
+## Status: CODE COMPLETE — Database-Only (No Google Sheets)
 
 ---
 
@@ -13,8 +13,12 @@
 - New 💡 Insights tab: KPI cards, year bar chart, consistency rankings (CV%), most improved, tour records
 - Export/Import JSON backup in admin panel
 - ⌨ Keyboard score entry mode toggle (steppers ↔ direct number inputs with Tab navigation)
+- ✎ Admin can edit or delete individual scores from the live leaderboard (edit/delete buttons visible in admin mode)
+- ⏳ Pending score indicator — when a player submits a score, the scorecard shows "Pending approval" with Unsubmit and Edit buttons
+- ✕ Players can unsubmit their pending scores before admin approval
+- ✎ Players can edit pending scores (loads score into editor, removes from pending queue)
 
-### 2. Backend Files Created
+### 2. Backend Files Created (Database-Only Architecture)
 | File | Purpose |
 |------|---------|
 | `package.json` | `@neondatabase/serverless ^1.0.2` dependency |
@@ -22,15 +26,25 @@
 | `api/_db.js` | Lazy Neon connection, schema init, `getState()`, `setKey()` |
 | `api/state.js` | `GET /api/state` — returns full `{ scores, published, pending, matchplay }` |
 | `api/submit.js` | `POST /api/submit` — public, appends score to pending queue |
-| `api/admin.js` | `POST /api/admin` — PIN-gated, handles all admin mutations |
+| `api/unsubmit.js` | `POST /api/unsubmit` — public, allows players to withdraw pending submissions |
+| `api/admin.js` | `POST /api/admin` — PIN-gated, handles all admin mutations including `deleteScore` |
 
-### 3. index.html Script Changes
+**Note:** All data is stored exclusively in Neon Postgres. Google Sheets integration has been completely removed.
+
+### 3. index.html Script Changes (Database-Only)
 - `loadState()` → async, fetches from `/api/state`, falls back to localStorage cache
 - `saveState()` → writes localStorage cache only (server is source of truth)
 - `submitForApproval()` → optimistic local update + POST `/api/submit`
+- `unsubmitScore()` → removes pending submission + POST `/api/unsubmit` (public)
+- `editPendingScore()` → loads pending score into editor, removes from queue + POST `/api/unsubmit`
+- `unsubmitPendingScore()` → admin can unsubmit any pending score from the list
+- `editPendingFromList()` → admin can edit any pending score from the list
+- `updatePendingStatus()` → shows/hides pending indicator on scorecard
 - `adminDirectSave()` → `adminPost('save', ...)`
 - `approveScore()` → `adminPost('approve', ...)`
 - `rejectScore()` → `adminPost('reject', ...)`
+- `deleteScore()` → `adminPost('deleteScore', ...)` — deletes a single score
+- `editScore()` → loads the score into the scorecard editor
 - `clearPendingQueue()` → `adminPost('clearPending')`
 - `togglePublish()` → `adminPost('publish', ...)`
 - All matchplay mutations → `saveMpRound(rnd)` → `adminPost('updateMatchplayRound', ...)`
@@ -38,7 +52,10 @@
 - `clearAllScores()` → `adminPost('clearScores')`
 - `exportData()` → fetches fresh state from `/api/state` then downloads JSON
 - `importData()` → restores local state + `adminPost('importState', ...)`
+- `fetchStats()` → computes stats from TOURS data (no Google Sheets dependency)
 - Init → `async` IIFE with `await loadState()`, 30s auto-refresh interval
+
+**Removed:** All Google Sheets integration (`SCRIPT_URL`, `sheetsPost()`, `saveRoundToSheets()`, `saveMpToSheets()`, `bulkUploadToSheets()`)
 
 ---
 
@@ -60,10 +77,11 @@ Keys: `scores`, `published`, `pending`, `matchplay`
 |--------|------|------|--------|
 | GET | `/api/state` | Public | Read all state |
 | POST | `/api/submit` | Public | Submit score to pending queue |
+| POST | `/api/unsubmit` | Public | Withdraw pending submission |
 | POST | `/api/admin` | PIN `2026` | All admin mutations |
 
 ### Admin Actions (POST /api/admin)
-`approve`, `reject`, `save`, `publish`, `updateMatchplayRound`, `resetMatchplay`, `clearScores`, `clearPending`, `importState`
+`approve`, `reject`, `save`, `deleteScore`, `publish`, `updateMatchplayRound`, `resetMatchplay`, `clearScores`, `clearPending`, `importState`
 
 ---
 

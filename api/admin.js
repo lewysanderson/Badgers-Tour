@@ -61,6 +61,24 @@ module.exports = async function handler(req, res) {
         return res.json({ ok: true, state: { scores } });
       }
 
+      // ── DELETE SCORE ─────────────────────────────────────────
+      case 'deleteScore': {
+        const { player, round } = params;
+        if (!player || !round) {
+          return res.status(400).json({ error: 'Missing player or round' });
+        }
+        if (scores[player] && scores[player][round]) {
+          delete scores[player][round];
+          // Clean up empty player objects
+          if (Object.keys(scores[player]).length === 0) {
+            delete scores[player];
+          }
+          await setKey('scores', scores);
+          return res.json({ ok: true, state: { scores } });
+        }
+        return res.status(404).json({ error: 'Score not found' });
+      }
+
       // ── PUBLISH ──────────────────────────────────────────────
       case 'publish': {
         const { round } = params;
